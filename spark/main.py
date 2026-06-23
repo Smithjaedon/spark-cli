@@ -2,6 +2,8 @@ import typer
 from rich.console import Console
 from rich.text import Text
 
+from spark.cli import spark_create_init
+
 app = typer.Typer()
 console = Console()
 
@@ -10,7 +12,7 @@ console = Console()
 def create() -> None:
     console.print(Text("Spark", style="cyan"))
     try:
-        pass
+        spark_create_init()
     except Exception:
         pass
     console.print(Text("Done.", style="bold green"))

@@ -1,0 +1,6 @@
+DB_USER=postgres
+DB_PASSWORD=abra
+DB_PORT=5433
+DB_NAME=fast
+REDIS_URL=redis://localhost:6379
+SECRET_KEY="{{SECRET_KEY}}"

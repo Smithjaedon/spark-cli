@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Planning docs
+plan.md
+todo.md

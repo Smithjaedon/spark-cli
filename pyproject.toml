@@ -5,6 +5,7 @@ description = "CLI scaffolding tool — generate production-ready project struct
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "jinja2>=3.1.6",
     "rich>=15.0.0",
     "typer>=0.26.7",
 ]
