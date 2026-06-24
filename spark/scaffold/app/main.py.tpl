@@ -10,6 +10,7 @@ from app.core.auth import router as auth
 from app.core.database import engine, init_db
 from app.core.exceptions import AuthenticationError, ConflictError
 from app.core.logging_config import setup_logging
+from app.middleware.logging_middleware import logging_middleware
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.middleware("http")(logging_middleware)
 
 
 @app.exception_handler(AuthenticationError)
