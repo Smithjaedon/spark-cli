@@ -12,3 +12,9 @@ wheels/
 # Planning docs
 plan.md
 todo.md
+
+# Local environment
+.env
+
+# Lint cache
+.ruff_cache/

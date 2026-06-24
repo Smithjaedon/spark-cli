@@ -18,6 +18,13 @@ def create_api_project() -> None:
         ".env.tpl",
     ]
 
+    base = os.path.join(os.getcwd(), "main.py")
+    if not os.path.exists(base):
+        raise FileNotFoundError(
+            f"Cannot create API project: {base} does not exist. Please run 'spark create' first."
+        )
+    os.remove(base)
+
     secret_key = secrets.token_urlsafe(32)
 
     for tpl_path in templates:
