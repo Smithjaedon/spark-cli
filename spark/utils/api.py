@@ -52,3 +52,8 @@ def initalize_dependencies() -> None:
     output_dir = os.getcwd()
     subprocess.run(["uv", "init"], cwd=output_dir, check=True)
     subprocess.run(["uv", "add"] + API_DEPS, cwd=output_dir, check=True)
+
+
+def setup_alembic() -> None:
+    output_dir = os.getcwd()
+    subprocess.run(["alembic", "init", "alembic"], cwd=output_dir, check=True)

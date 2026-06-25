@@ -1,5 +1,6 @@
 API_DEPS = [
     "fastapi",
+    "alembic",
     "uvicorn[standard]",
     "sqlalchemy[asyncio]",
     "asyncpg",
