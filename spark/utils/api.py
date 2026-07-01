@@ -1,7 +1,7 @@
 import logging
-import os
 import secrets
 import subprocess
+from pathlib import Path
 
 from spark.utils.deps import API_DEPS
 from spark.utils.exceptions import AlembicError, DependencyError
@@ -29,21 +29,31 @@ def create_api_project(output_dir: str) -> None:
     ]
 
     secret_key = secrets.token_urlsafe(32)
-    project_name = os.path.basename(os.path.abspath(output_dir))
+    out_dir = Path(output_dir)
 
+    parents: set[Path] = set()
+    paths: list[Path] = []
     for tpl_path in templates:
-        out_path = os.path.join(output_dir, tpl_path.removesuffix(".tpl"))
-        parent = os.path.dirname(out_path)
-        if parent:
-            os.makedirs(parent, exist_ok=True)
-        template = env.get_template(tpl_path)
-        rendered = template.render(SECRET_KEY=secret_key, project_name=project_name)
-        with open(out_path, "w") as f:
-            f.write(rendered)
+        out = out_dir / tpl_path.removesuffix(".tpl")
+        paths.append(out)
+        parent = out.parent
+        if parent != out_dir:
+            parents.add(parent)
 
-    tests_root = os.path.join(output_dir, "tests")
-    os.makedirs(os.path.join(tests_root, "integrations"), exist_ok=True)
-    os.makedirs(os.path.join(tests_root, "unit"), exist_ok=True)
+    for parent in parents:
+        parent.mkdir(parents=True, exist_ok=True)
+
+    for out, tpl_path in zip(paths, templates):
+        template = env.get_template(tpl_path)
+        rendered = template.render(
+            SECRET_KEY=secret_key,
+            project_name=out_dir.name,
+        )
+        out.write_text(rendered)
+
+    tests_root = out_dir / "tests"
+    (tests_root / "integrations").mkdir(parents=True, exist_ok=True)
+    (tests_root / "unit").mkdir(parents=True, exist_ok=True)
 
 
 def initialize_dependencies(output_dir: str) -> None:
@@ -78,9 +88,8 @@ def setup_alembic(output_dir: str) -> None:
         )
         tpl = env.get_template("alembic/env.py.tpl")
         rendered = tpl.render()
-        dest = os.path.join(output_dir, "alembic", "env.py")
-        with open(dest, "w") as f:
-            f.write(rendered)
+        dest = Path(output_dir, "alembic", "env.py")
+        dest.write_text(rendered)
     except (subprocess.CalledProcessError, OSError):
         logger.exception("alembic init failed")
         raise AlembicError("Failed to initialize Alembic migrations")
