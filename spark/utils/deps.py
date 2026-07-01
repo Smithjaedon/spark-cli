@@ -6,9 +6,10 @@ API_DEPS = [
     "asyncpg",
     "pydantic[email]",
     "pyjwt",
-    "pwdlib",
+    "pwdlib[argon2]",
     "redis",
     "python-dotenv",
+    "python-multipart",
     "greenlet",
     "rich",
 ]

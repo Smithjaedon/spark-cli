@@ -6,9 +6,20 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "jinja2>=3.1.6",
+    "questionary>=2.1.0",
     "rich>=15.0.0",
     "typer>=0.26.7",
 ]
+
+[project.scripts]
+spark = "spark.main:app"
+
+[tool.setuptools.package-data]
+spark = ["scaffold/**/*.tpl"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 dev = [
