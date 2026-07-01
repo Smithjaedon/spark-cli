@@ -64,6 +64,7 @@ def _free_port(port: int) -> None:
 def dev() -> None:
     _free_port(8080)
     _free_port(int(os.environ.get("PORT", "8000")))
+    _free_port(int(os.environ.get("REDIS_PORT", "6379")))
 
     proc: subprocess.Popen[bytes] | None = None
     try:
