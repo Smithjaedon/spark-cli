@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from rich.markup import escape as rich_escape
 
 from app.core.auth import router as auth
 from app.core.database import engine, init_db
@@ -45,7 +46,10 @@ app.middleware("http")(logging_middleware)
 
 @app.exception_handler(AuthenticationError)
 async def auth_error_handler(_request: Request, exc: AuthenticationError):
-    logger.warning("Authentication failed: %s", exc.args[0] if exc.args else "unknown")
+    logger.warning(
+        "[red]Authentication failed:[/] %s",
+        rich_escape(exc.args[0] if exc.args else "unknown"),
+    )
     return JSONResponse(
         status_code=401,
         content={"detail": exc.args[0] if exc.args else "Authentication failed"},
@@ -54,7 +58,10 @@ async def auth_error_handler(_request: Request, exc: AuthenticationError):
 
 @app.exception_handler(ConflictError)
 async def conflict_error_handler(_request: Request, exc: ConflictError):
-    logger.warning("Conflict: %s", exc.args[0] if exc.args else "unknown")
+    logger.warning(
+        "[yellow]Conflict:[/] %s",
+        rich_escape(exc.args[0] if exc.args else "unknown"),
+    )
     return JSONResponse(
         status_code=409, content={"detail": exc.args[0] if exc.args else "Conflict"}
     )
