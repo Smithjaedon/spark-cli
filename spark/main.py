@@ -10,7 +10,6 @@ from spark.cli import spark_create_init
 from spark.utils.exceptions import (
     AlembicError,
     DependencyError,
-    InvalidOptionError,
     ScaffoldError,
 )
 
@@ -24,10 +23,6 @@ def create() -> None:
     console.print(Text("Spark", style="cyan"))
     try:
         spark_create_init()
-    except InvalidOptionError:
-        logger.exception("Invalid project type selected.")
-        console.print("[red]Invalid project type selected.[/]")
-        raise typer.Exit(code=1)
     except ScaffoldError:
         logger.exception("Scaffolding error occurred.")
         console.print("[red]Scaffolding failed.[/]")

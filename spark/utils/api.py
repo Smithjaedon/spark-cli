@@ -59,12 +59,13 @@ def create_api_project(output_dir: str) -> None:
 def initialize_dependencies(output_dir: str) -> None:
     try:
         subprocess.run(
-            ["uv", "init"],
+            ["uv", "init", "--no-readme"],
             cwd=output_dir,
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
+        Path(output_dir, "main.py").unlink(missing_ok=True)
         subprocess.run(
             ["uv", "add", *API_DEPS],
             cwd=output_dir,
