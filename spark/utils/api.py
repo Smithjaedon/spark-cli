@@ -25,6 +25,7 @@ def create_api_project(output_dir: str) -> None:
         "app/services/user_service.py.tpl",
         ".env.tpl",
         ".gitignore.tpl",
+        ".github/workflows/ci.yaml.tpl",
         "process-compose.yaml.tpl",
     ]
 

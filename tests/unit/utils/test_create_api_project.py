@@ -16,7 +16,7 @@ class TestCreateApiProject:
 
         create_api_project("tmp/test_project")
 
-        assert mock_get_template.call_count == 14
+        assert mock_get_template.call_count == 15
         mock_get_template.assert_has_calls(
             [
                 call("README.md.tpl"),
@@ -32,12 +32,13 @@ class TestCreateApiProject:
                 call("app/services/user_service.py.tpl"),
                 call(".env.tpl"),
                 call(".gitignore.tpl"),
+                call(".github/workflows/ci.yaml.tpl"),
                 call("process-compose.yaml.tpl"),
             ],
             any_order=True,
         )
 
-        assert mock_template.render.call_count == 14
+        assert mock_template.render.call_count == 15
         for rendercall in mock_template.render.call_args_list:
             _, kwargs = rendercall
             assert "project_name" in kwargs
@@ -45,7 +46,7 @@ class TestCreateApiProject:
             assert "SECRET_KEY" in kwargs
             assert len(kwargs["SECRET_KEY"]) > 0
 
-        assert mock_write_text.call_count == 14
+        assert mock_write_text.call_count == 15
         for writecall in mock_write_text.call_args_list:
             args, _ = writecall
             assert args[0] == "rendered"
