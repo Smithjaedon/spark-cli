@@ -1,7 +1,7 @@
 [project]
 name = "spark"
 version = "0.1.0"
-description = "CLI scaffolding tool — generate production-ready project structures from templates"
+description = "Scaffold and run production-ready async FastAPI projects with JWT auth, SQLAlchemy, PostgreSQL, Redis, and Alembic"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
