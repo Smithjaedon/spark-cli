@@ -18,6 +18,7 @@ def create_api_project(output_dir: str) -> None:
         "app/core/exceptions.py.tpl",
         "app/core/logging_config.py.tpl",
         "app/middleware/logging_middleware.py.tpl",
+        "app/routes/__init__.py.tpl",
         "app/models.py.tpl",
         "app/schemas.py.tpl",
         "app/main.py.tpl",

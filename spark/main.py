@@ -7,6 +7,7 @@ from rich.console import Console
 from rich.text import Text
 
 from spark.cli import spark_create_init
+from spark.utils.add_route import add_route_file
 from spark.utils.exceptions import (
     AlembicError,
     DependencyError,
@@ -41,6 +42,12 @@ def create() -> None:
         raise typer.Exit(code=1)
 
     console.print(Text("Done.", style="bold green"))
+
+
+@app.command("add-route", help="adds a route file to app/routes/")
+def add_route(name: str) -> None:
+    path = add_route_file(os.getcwd(), name)
+    console.print(f"[green]Created {path}[/]")
 
 
 def _free_port(port: int) -> None:

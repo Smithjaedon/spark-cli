@@ -16,7 +16,7 @@ class TestCreateApiProject:
 
         create_api_project("tmp/test_project")
 
-        assert mock_get_template.call_count == 15
+        assert mock_get_template.call_count == 16
         mock_get_template.assert_has_calls(
             [
                 call("README.md.tpl"),
@@ -25,6 +25,7 @@ class TestCreateApiProject:
                 call("app/core/exceptions.py.tpl"),
                 call("app/core/logging_config.py.tpl"),
                 call("app/middleware/logging_middleware.py.tpl"),
+                call("app/routes/__init__.py.tpl"),
                 call("app/models.py.tpl"),
                 call("app/schemas.py.tpl"),
                 call("app/main.py.tpl"),
@@ -38,7 +39,7 @@ class TestCreateApiProject:
             any_order=True,
         )
 
-        assert mock_template.render.call_count == 15
+        assert mock_template.render.call_count == 16
         for rendercall in mock_template.render.call_args_list:
             _, kwargs = rendercall
             assert "project_name" in kwargs
@@ -46,7 +47,7 @@ class TestCreateApiProject:
             assert "SECRET_KEY" in kwargs
             assert len(kwargs["SECRET_KEY"]) > 0
 
-        assert mock_write_text.call_count == 15
+        assert mock_write_text.call_count == 16
         for writecall in mock_write_text.call_args_list:
             args, _ = writecall
             assert args[0] == "rendered"
