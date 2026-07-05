@@ -51,3 +51,45 @@ class TestCreateApiProject:
         for writecall in mock_write_text.call_args_list:
             args, _ = writecall
             assert args[0] == "rendered"
+
+    def test_generates_full_project_structure(self, tmp_path):
+        create_api_project(str(tmp_path))
+
+        expected_files = [
+            "README.md",
+            "app/main.py",
+            "app/core/database.py",
+            "app/core/exceptions.py",
+            "app/core/logging_config.py",
+            "app/core/auth.py",
+            "app/models.py",
+            "app/schemas.py",
+            "app/services/auth_service.py",
+            "app/services/user_service.py",
+            "app/middleware/logging_middleware.py",
+            "app/routes/__init__.py",
+            ".gitignore",
+            "process-compose.yaml",
+            ".github/workflows/ci.yaml",
+        ]
+        for path in expected_files:
+            assert (tmp_path / path).exists(), f"Missing {path}"
+
+        main_py = (tmp_path / "app" / "main.py").read_text()
+        assert "setup_logging()" in main_py
+        assert "app.include_router(auth)" in main_py
+
+        readme = (tmp_path / "README.md").read_text()
+        assert tmp_path.name in readme
+
+        env_content = (tmp_path / ".env").read_text()
+        assert "SECRET_KEY=" in env_content
+
+        ci = (tmp_path / ".github" / "workflows" / "ci.yaml").read_text()
+        assert "uv run pytest" in ci
+
+        models = (tmp_path / "app" / "models.py").read_text()
+        assert "class User(Base)" in models
+
+        assert (tmp_path / "tests" / "unit").is_dir()
+        assert (tmp_path / "tests" / "integrations").is_dir()

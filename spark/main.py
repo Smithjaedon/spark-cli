@@ -5,6 +5,7 @@ from pathlib import Path
 
 import typer
 from rich.console import Console
+from rich.logging import RichHandler
 from rich.text import Text
 
 from spark.cli import spark_create_init
@@ -13,6 +14,13 @@ from spark.utils.exceptions import (
     AlembicError,
     DependencyError,
     ScaffoldError,
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",
+    handlers=[RichHandler(markup=True, rich_tracebacks=True)],
+    force=True,
 )
 
 logger = logging.getLogger(__name__)

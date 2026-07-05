@@ -68,6 +68,7 @@ def add_route_file(project_dir: str, name: str) -> Path:
             content = content.replace(
                 IMPORT_MARKER,
                 f"{IMPORT_MARKER}\n{import_line}",
+                1,
             )
 
         if include_line not in content:
@@ -79,6 +80,7 @@ def add_route_file(project_dir: str, name: str) -> Path:
             content = content.replace(
                 INCLUDE_MARKER,
                 f"{include_line}\n{INCLUDE_MARKER}",
+                1,
             )
 
         try:
