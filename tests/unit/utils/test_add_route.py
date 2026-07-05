@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from spark.utils.add_route import add_route_file
 
 MAIN_TPL = """# from app.routers import
@@ -47,3 +49,15 @@ class TestAddRouteFile:
         content = main_py.read_text()
         assert content.count("from app.routes.items import route as items") == 1
         assert content.count("app.include_router(items)") == 1
+
+    def test_display_path_uses_project_folder_name(self, tmp_path) -> None:
+        project_dir = tmp_path / "my_project"
+        (project_dir / "app").mkdir(parents=True)
+
+        route_path = add_route_file(str(project_dir), "users")
+
+        project_root = project_dir
+        display_path = Path(project_root.name) / route_path.relative_to(project_root)
+        expected = Path("my_project") / "app" / "routes" / "users.py"
+        assert display_path == expected
+        assert str(display_path) == "my_project/app/routes/users.py"

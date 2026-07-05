@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+from pathlib import Path
 
 import typer
 from rich.console import Console
@@ -47,7 +48,9 @@ def create() -> None:
 @app.command("add-route", help="adds a route file to app/routes/")
 def add_route(name: str) -> None:
     path = add_route_file(os.getcwd(), name)
-    console.print(f"[green]Created {path}[/]")
+    project_root = Path(os.getcwd())
+    display_path = Path(project_root.name) / path.relative_to(project_root)
+    console.print(f"[green]Created {display_path}[/]")
 
 
 def _free_port(port: int) -> None:
