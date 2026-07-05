@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 
 from spark.utils.deps import API_DEPS
-from spark.utils.exceptions import AlembicError, DependencyError
+from spark.utils.exceptions import AlembicError, DependencyError, ProjectScaffoldError
 from spark.utils.template_config import env
 
 logger = logging.getLogger(__name__)
@@ -42,20 +42,23 @@ def create_api_project(output_dir: str) -> None:
         if parent != out_dir:
             parents.add(parent)
 
-    for parent in parents:
-        parent.mkdir(parents=True, exist_ok=True)
+    try:
+        for parent in parents:
+            parent.mkdir(parents=True, exist_ok=True)
 
-    for out, tpl_path in zip(paths, templates):
-        template = env.get_template(tpl_path)
-        rendered = template.render(
-            SECRET_KEY=secret_key,
-            project_name=out_dir.name,
-        )
-        out.write_text(rendered)
+        for out, tpl_path in zip(paths, templates):
+            template = env.get_template(tpl_path)
+            rendered = template.render(
+                SECRET_KEY=secret_key,
+                project_name=out_dir.name,
+            )
+            out.write_text(rendered)
 
-    tests_root = out_dir / "tests"
-    (tests_root / "integrations").mkdir(parents=True, exist_ok=True)
-    (tests_root / "unit").mkdir(parents=True, exist_ok=True)
+        tests_root = out_dir / "tests"
+        (tests_root / "integrations").mkdir(parents=True, exist_ok=True)
+        (tests_root / "unit").mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        raise ProjectScaffoldError(f"File operation failed: {e}") from e
 
 
 def initialize_dependencies(output_dir: str) -> None:

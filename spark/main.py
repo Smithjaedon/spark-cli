@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.text import Text
 
 from spark.cli import spark_create_init
-from spark.utils.add_route import add_route_file
+from spark.utils.add_route import AddRouteError, add_route_file
 from spark.utils.exceptions import (
     AlembicError,
     DependencyError,
@@ -47,22 +47,39 @@ def create() -> None:
 
 @app.command("add-route", help="adds a route file to app/routes/")
 def add_route(name: str) -> None:
-    path = add_route_file(os.getcwd(), name)
+    try:
+        path = add_route_file(os.getcwd(), name)
+    except AddRouteError:
+        logger.exception("Failed to add route.")
+        console.print("[red]Failed to add route.[/]")
+        raise typer.Exit(code=1)
+
     project_root = Path(os.getcwd())
     display_path = Path(project_root.name) / path.relative_to(project_root)
     console.print(f"[green]Created {display_path}[/]")
 
 
 def _free_port(port: int) -> None:
-    result = subprocess.run(
-        ["lsof", "-ti", f":{port}"],
-        capture_output=True,
-        text=True,
-    )
+    try:
+        result = subprocess.run(
+            ["lsof", "-ti", f":{port}"],
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        logger.warning("lsof not found; cannot check port %s", port)
+        return
+    except OSError as e:
+        logger.warning("Failed to check port %s: %s", port, e)
+        return
+
     if result.stdout.strip():
         for pid in result.stdout.strip().split():
             logger.info("Killing process %s holding port %s", pid, port)
-            subprocess.run(["kill", "-9", pid], capture_output=True)
+            try:
+                subprocess.run(["kill", "-9", pid], capture_output=True, check=True)
+            except (FileNotFoundError, OSError) as e:
+                logger.warning("Failed to kill process %s on port %s: %s", pid, port, e)
 
 
 @app.command("dev", help="run process-compose up for the project")

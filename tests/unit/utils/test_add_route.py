@@ -1,6 +1,7 @@
+import pytest
 from pathlib import Path
 
-from spark.utils.add_route import add_route_file
+from spark.utils.add_route import AddRouteError, add_route_file
 
 MAIN_TPL = """# from app.routers import
 
@@ -36,7 +37,7 @@ class TestAddRouteFile:
 
         assert (project_dir / "app" / "routes" / "users.py").exists()
 
-    def test_does_not_duplicate_wiring(self, tmp_path) -> None:
+    def test_raises_on_duplicate_route(self, tmp_path) -> None:
         project_dir = tmp_path / "my_project"
         app_dir = project_dir / "app"
         app_dir.mkdir(parents=True)
@@ -44,11 +45,21 @@ class TestAddRouteFile:
         main_py.write_text(MAIN_TPL)
 
         add_route_file(str(project_dir), "items")
-        add_route_file(str(project_dir), "items")
+        with pytest.raises(AddRouteError, match="Route file already exists"):
+            add_route_file(str(project_dir), "items")
 
-        content = main_py.read_text()
-        assert content.count("from app.routes.items import route as items") == 1
-        assert content.count("app.include_router(items)") == 1
+    def test_rejects_invalid_route_names(self, tmp_path) -> None:
+        project_dir = tmp_path / "my_project"
+        (project_dir / "app").mkdir(parents=True)
+
+        with pytest.raises(AddRouteError, match="Route name cannot be empty"):
+            add_route_file(str(project_dir), "")
+
+        with pytest.raises(AddRouteError, match="Invalid route name"):
+            add_route_file(str(project_dir), "my-route")
+
+        with pytest.raises(AddRouteError, match="Invalid route name"):
+            add_route_file(str(project_dir), "123abc")
 
     def test_display_path_uses_project_folder_name(self, tmp_path) -> None:
         project_dir = tmp_path / "my_project"
