@@ -4,7 +4,7 @@ processes:
   web:
     command: uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --reload
     shutdown:
-      signal: SIGINT
+      signal: 2
       timeout: 10s
     availability:
       restart: on_failure
@@ -12,7 +12,7 @@ processes:
   redis:
     command: redis-server --port ${REDIS_PORT:-6379}
     shutdown:
-      signal: SIGTERM
+      signal: 15
       timeout: 10s
     availability:
       restart: on_failure
