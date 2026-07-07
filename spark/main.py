@@ -3,6 +3,8 @@ import os
 import subprocess
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 import typer
 from rich.console import Console
 from rich.logging import RichHandler
@@ -92,6 +94,7 @@ def _free_port(port: int) -> None:
 
 @app.command("dev", help="run process-compose up for the project")
 def dev() -> None:
+    load_dotenv()
     _free_port(8080)
     _free_port(int(os.environ.get("PORT", "8000")))
     _free_port(int(os.environ.get("REDIS_PORT", "6379")))
