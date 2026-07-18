@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from alembic import context
+from app import models  # noqa: F401 — registers models with Base.metadata
 from app.core.database import Base, engine
 
 config = context.config

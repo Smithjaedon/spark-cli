@@ -4,7 +4,7 @@ import uuid
 from typing import Annotated
 
 import redis.asyncio as aioredis
-from app.core.database import get_db
+from app.core.database import SessionDep
 from app.core.exceptions import AuthenticationError, ConflictError
 from app.models import User
 from app.schemas import UserCreate, UserLogin, UserRead
@@ -23,7 +23,6 @@ from app.services.auth_service import (
 from app.services.user_service import create_user
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +43,7 @@ router = APIRouter()
 
 async def get_current_user(
     request: Request,
-    session: AsyncSession = Depends(get_db),
+    session: SessionDep,
 ) -> User:
     token = request.cookies.get("access_token")
     if not token:
@@ -73,7 +72,7 @@ TokenDep = Annotated[User, Depends(get_current_user)]
 @router.post("/register", response_model=UserRead)
 async def register(
     user_data: UserCreate,
-    session: AsyncSession = Depends(get_db),
+    session: SessionDep,
 ):
     existing_user = await get_user(session, user_data.username)
     if existing_user:
@@ -98,7 +97,7 @@ async def register(
 async def login(
     response: Response,
     creds: UserLogin,
-    session: AsyncSession = Depends(get_db),
+    session: SessionDep,
 ):
     user = await authenticate_user(session, creds.username, creds.password)
     if not user:
@@ -142,7 +141,7 @@ async def login(
 async def refresh(
     request: Request,
     response: Response,
-    session: AsyncSession = Depends(get_db),
+    session: SessionDep,
 ):
     old_refresh_token = request.cookies.get("refresh_token")
     if not old_refresh_token:

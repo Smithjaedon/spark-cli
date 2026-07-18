@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from rich.markup import escape as rich_escape
 
 from app.core.auth import router as auth
-from app.core.database import engine, init_db
+from app.core.database import engine
 from app.core.exceptions import AuthenticationError, ConflictError
 from app.core.logging_config import setup_logging
 from app.middleware.logging_middleware import logging_middleware
@@ -20,7 +20,6 @@ setup_logging()
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    await init_db()
     yield
     await engine.dispose()
 

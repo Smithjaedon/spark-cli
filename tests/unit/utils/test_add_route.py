@@ -24,9 +24,9 @@ class TestAddRouteFile:
         assert result == expected_file
         assert (
             expected_file.read_text()
-            == "from fastapi import APIRouter\n\nroute = APIRouter()\n"
+            == "from fastapi import APIRouter\n\nrouter = APIRouter()\n"
         )
-        assert "from app.routes.items import route as items" in main_py.read_text()
+        assert "from app.routes.items import router as items" in main_py.read_text()
         assert "app.include_router(items)" in main_py.read_text()
 
     def test_skips_wiring_if_main_py_missing(self, tmp_path) -> None:

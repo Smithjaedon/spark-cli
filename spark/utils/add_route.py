@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 ROUTE_TEMPLATE = """from fastapi import APIRouter
 
-route = APIRouter()
+router = APIRouter()
 """
 
 IMPORT_MARKER = "# from app.routers import"
@@ -56,7 +56,7 @@ def add_route_file(project_dir: str, name: str) -> Path:
         except OSError as e:
             raise AddRouteError(f"Failed to update {main_py}: {e}") from e
 
-        import_line = f"from app.routes.{name} import route as {name}"
+        import_line = f"from app.routes.{name} import router as {name}"
         include_line = f"app.include_router({name})"
 
         if import_line not in content:

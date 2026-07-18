@@ -86,7 +86,35 @@ uv run alembic check
 
 > **Note:** Migrations run against the database configured in `.env`. Set `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `DB_NAME` before running.
 
-### Code quality
+### Dependency injection
+
+The scaffold uses FastAPI's dependency injection system with typed `Annotated` aliases for clean, reusable route signatures:
+
+| Alias | Type | Source | Purpose |
+|---|---|---|---|
+| `SessionDep` | `AsyncSession` | `app/core/database.py` | Provides an open database session (auto-closed on response) |
+| `TokenDep` | `User` | `app/core/auth.py` | Resolves the authenticated user from the JWT cookie, rejects unauthenticated requests |
+
+**Usage:**
+
+```python
+from app.core.auth import TokenDep
+from app.core.database import SessionDep
+
+# Public endpoint — just needs a session
+@router.post("/items")
+async def create_item(data: ItemCreate, session: SessionDep):
+    ...
+
+# Protected endpoint — needs auth check and session
+@router.get("/items")
+async def list_items(current_user: TokenDep, session: SessionDep):
+    ...
+```
+
+`TokenDep` and `SessionDep` are independent and composable — FastAPI deduplicates the underlying session so only one connection is opened per request even when both are used.
+
+## Code quality
 
 ```bash
 uv run ruff check .       # Lint
